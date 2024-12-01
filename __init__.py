@@ -26,7 +26,7 @@ class CustomDashboardChallenge(Challenges):
 
 
 class CustomDashboardChallengeControler(BaseChallenge):
-    id = conf["name"]  # Unique identifier used to register challenges
+    id = "custom"  # Unique identifier used to register challenges
     name = conf["name"]  # Name of a challenge type
     templates = {  # Templates used for each aspect of challenge editing & viewing
         "create": f"/plugins/{plugin_name}/assets/create.html",
