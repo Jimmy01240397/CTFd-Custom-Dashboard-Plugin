@@ -16,7 +16,7 @@ conf = None
 plugin_name = __name__.split('.')[-1]
 
 class CustomDashboardChallenge(Challenges):
-    __mapper_args__ = {"polymorphic_identity": "custom"}
+    __mapper_args__ = {"polymorphic_identity": conf["name"]}
     id = db.Column(
         db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
@@ -26,8 +26,8 @@ class CustomDashboardChallenge(Challenges):
 
 
 class CustomDashboardChallengeControler(BaseChallenge):
-    id = "custom"  # Unique identifier used to register challenges
-    name = "custom"  # Name of a challenge type
+    id = conf["name"]  # Unique identifier used to register challenges
+    name = conf["name"]  # Name of a challenge type
     templates = {  # Templates used for each aspect of challenge editing & viewing
         "create": f"/plugins/{plugin_name}/assets/create.html",
         "update": f"/plugins/{plugin_name}/assets/update.html",
@@ -60,7 +60,7 @@ def loadconfig():
 def load(app):
     loadconfig()
     upgrade(plugin_name=plugin_name)
-    CHALLENGE_CLASSES["custom"] = CustomDashboardChallengeControler
+    CHALLENGE_CLASSES[conf["name"]] = CustomDashboardChallengeControler
     register_plugin_assets_directory(
         app, base_path=f"/plugins/{plugin_name}/assets/"
     )
