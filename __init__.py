@@ -15,19 +15,19 @@ import os
 conf = None
 plugin_name = __name__.split('.')[-1]
 
-class CGGCChallenge(Challenges):
-    __mapper_args__ = {"polymorphic_identity": "cggc"}
+class CustomDashboardChallenge(Challenges):
+    __mapper_args__ = {"polymorphic_identity": "custom"}
     id = db.Column(
         db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
 
     def __init__(self, *args, **kwargs):
-        super(CGGCChallenge, self).__init__(**kwargs)
+        super(CustomDashboardChallenge, self).__init__(**kwargs)
 
 
-class CGGCChallengeControler(BaseChallenge):
-    id = "cggc"  # Unique identifier used to register challenges
-    name = "cggc"  # Name of a challenge type
+class CustomDashboardChallengeControler(BaseChallenge):
+    id = "custom"  # Unique identifier used to register challenges
+    name = "custom"  # Name of a challenge type
     templates = {  # Templates used for each aspect of challenge editing & viewing
         "create": f"/plugins/{plugin_name}/assets/create.html",
         "update": f"/plugins/{plugin_name}/assets/update.html",
@@ -44,7 +44,7 @@ class CGGCChallengeControler(BaseChallenge):
     blueprint = Blueprint(
         plugin_name, __name__, template_folder="templates", static_folder="assets"
     )
-    challenge_model = CGGCChallenge
+    challenge_model = CustomDashboardChallenge
 
     @classmethod
     def solve(cls, user, team, challenge, request):
@@ -60,7 +60,7 @@ def loadconfig():
 def load(app):
     loadconfig()
     upgrade(plugin_name=plugin_name)
-    CHALLENGE_CLASSES["cggc"] = CGGCChallengeControler
+    CHALLENGE_CLASSES["custom"] = CustomDashboardChallengeControler
     register_plugin_assets_directory(
         app, base_path=f"/plugins/{plugin_name}/assets/"
     )
