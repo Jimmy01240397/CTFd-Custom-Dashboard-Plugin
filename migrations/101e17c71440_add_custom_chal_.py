@@ -1,4 +1,4 @@
-"""add CGGC
+"""add custom
 
 Revision ID: 101e17c71440
 Revises: 
@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade(op=None):
     op.create_table(
-        "cggc_challenge",
+        "custom_dashboard_challenge",
         sa.Column("id", sa.Integer, nullable=False),
         sa.ForeignKeyConstraint(["id"], ["challenges.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
@@ -26,4 +26,4 @@ def upgrade(op=None):
 
 
 def downgrade(op=None) -> None:
-    op.drop_table("cggc_challenge")
+    op.drop_table("custom_dashboard_challenge")
