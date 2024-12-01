@@ -15,8 +15,20 @@ import os
 conf = None
 plugin_name = __name__.split('.')[-1]
 
+def loadconfig():
+    global conf
+    dir_path = Path(__file__).parent.resolve()
+    with open(os.path.join(dir_path, 'config.yml')) as f:
+        conf = yaml.load(f, Loader=yaml.FullLoader)
+
+def getconfig(attr):
+    global conf
+    if conf == None:
+        loadconfig()
+    return conf[attr]
+
 class CustomDashboardChallenge(Challenges):
-    __mapper_args__ = {"polymorphic_identity": conf["name"]}
+    __mapper_args__ = {"polymorphic_identity": getconfig("name")}
     id = db.Column(
         db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
     )
@@ -26,8 +38,8 @@ class CustomDashboardChallenge(Challenges):
 
 
 class CustomDashboardChallengeControler(BaseChallenge):
-    id = "custom"  # Unique identifier used to register challenges
-    name = conf["name"]  # Name of a challenge type
+    id = getconfig("name")  # Unique identifier used to register challenges
+    name = getconfig("name")  # Name of a challenge type
     templates = {  # Templates used for each aspect of challenge editing & viewing
         "create": f"/plugins/{plugin_name}/assets/create.html",
         "update": f"/plugins/{plugin_name}/assets/update.html",
@@ -49,18 +61,13 @@ class CustomDashboardChallengeControler(BaseChallenge):
     @classmethod
     def solve(cls, user, team, challenge, request):
         super().solve(user, team, challenge, request)
-        requests.post(urllib.parse.urljoin(conf['url'], 'solve'), headers={"Authorization": f"Token {conf['token']}"}, json={"chall": challenge.id, "team": team.id})
+        requests.post(urllib.parse.urljoin(getconfig('url'), 'solve'), headers={"Authorization": f"Token {getconfig('token')}"}, json={"chall": challenge.id, "team": team.id})
 
-def loadconfig():
-    global conf
-    dir_path = Path(__file__).parent.resolve()
-    with open(os.path.join(dir_path, 'config.yml')) as f:
-        conf = yaml.load(f, Loader=yaml.FullLoader)
 
 def load(app):
     loadconfig()
     upgrade(plugin_name=plugin_name)
-    CHALLENGE_CLASSES[conf["name"]] = CustomDashboardChallengeControler
+    CHALLENGE_CLASSES[getconfig("name")] = CustomDashboardChallengeControler
     register_plugin_assets_directory(
         app, base_path=f"/plugins/{plugin_name}/assets/"
     )
